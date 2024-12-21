@@ -16,7 +16,7 @@ export default async function Modal({ params }: { params: { id: string } }) {
     return;
   }
   const imageURL = productPhoto.photo + '/public';
-  console.log('image URL ', imageURL);
+
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-50 left-0 top-0">
       <CloseModalButton />
