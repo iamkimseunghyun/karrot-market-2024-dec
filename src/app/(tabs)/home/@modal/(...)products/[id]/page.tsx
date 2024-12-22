@@ -3,7 +3,11 @@ import CloseModalButton from '@/app/(tabs)/home/@modal/(...)products/[id]/compon
 import db from '@/lib/db';
 import Image from 'next/image';
 
-export default async function Modal({ params }: { params: { id: string } }) {
+export default async function Modal({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const id = parseInt((await params).id);
   const productPhoto = await db.product.findUnique({
     where: { id },

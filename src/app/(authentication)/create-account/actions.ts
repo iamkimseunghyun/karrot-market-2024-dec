@@ -82,7 +82,6 @@ const createAccountFormSchema = z
   });
 
 export async function createAccount(prevState: any, formData: FormData) {
-  console.log(cookies());
   const data = {
     username: formData.get('username'),
     email: formData.get('email'),

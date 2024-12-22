@@ -7,10 +7,10 @@ import Button from '@/components/button';
 import {
   getUploadedProductImageURL,
   uploadProduct,
-} from '@/app/products/add/actions';
+} from '@/app/products/new/add/actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { productSchema, ProductType } from '@/app/products/add/schema';
+import { productSchema, ProductType } from '@/app/products/new/add/schema';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [

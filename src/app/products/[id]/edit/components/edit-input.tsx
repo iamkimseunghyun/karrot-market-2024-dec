@@ -5,12 +5,13 @@ import { PhotoIcon } from '@heroicons/react/24/solid';
 import Input from '@/components/input';
 import Button from '@/components/button';
 import { useForm } from 'react-hook-form';
-import { productSchema, ProductType } from '@/app/products/add/schema';
+import { productSchema, ProductType } from '@/app/products/new/add/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   editProduct,
   getUploadedProductImageURL,
-} from '@/app/products/add/actions';
+} from '@/app/products/new/add/actions';
+import { useRouter } from 'next/navigation';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [
@@ -36,6 +37,7 @@ const EditInput = ({
   description,
   productId,
 }: EditInputProps) => {
+  const router = useRouter();
   const [preview, setPreview] = useState(photo + '/public');
   const [fileError, setFileError] = useState('');
   const [uploadURL, setUploadURL] = useState('');
@@ -122,6 +124,10 @@ const EditInput = ({
   const onValid = async () => {
     await onSubmit();
   };
+
+  const cancelEdit = () => {
+    router.back();
+  };
   return (
     <div>
       <form action={onValid} className="flex flex-col gap-5 p-5">
@@ -181,7 +187,8 @@ const EditInput = ({
           {...register('description')}
           errors={[errors.description?.message ?? '']}
         />
-        <Button text="수정 완료" />
+        <Button text="수정 완료" type="primary" />
+        <Button action={cancelEdit} text="취소" type="danger" />
       </form>
     </div>
   );

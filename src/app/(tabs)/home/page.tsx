@@ -4,7 +4,7 @@ import ProductList from '@/components/product-list';
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/24/solid';
-import { unstable_cache as nextCache } from 'next/cache';
+import { revalidatePath, unstable_cache as nextCache } from 'next/cache';
 
 const getCachedProducts = nextCache(getInitialProducts, ['home-products']);
 
@@ -35,11 +35,20 @@ export const metadata = {
 
 const Page = async () => {
   const initialProducts = await getCachedProducts();
+  const revalidate = async () => {
+    'use server';
+    revalidatePath('/');
+  };
   return (
     <div>
       <ProductList initialProducts={initialProducts} />
+      <form action={revalidate}>
+        <button className="bg-orange-500 flex items-center justify-center rounded-full size-24 fixed bottom-34 right-8 text-white transition-colors font-bold hover:bg-orange-400 mr-20">
+          데이터 갱신
+        </button>
+      </form>
       <Link
-        href={'/products/add'}
+        href={'/products/new/add'}
         className="bg-orange-500 flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 text-white transition-colors hover:bg-orange-400"
       >
         <PlusIcon className="size-10" />

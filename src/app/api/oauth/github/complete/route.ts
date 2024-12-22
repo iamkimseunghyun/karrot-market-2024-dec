@@ -32,44 +32,44 @@ export async function GET(req: NextRequest) {
 
   const userEmailResponse = await getUserEmail(access_token);
 
-  // const { email } = await userEmailResponse.json();
-
-  const user = await db.user.findUnique({
+  const existGithubUser = await db.user.findUnique({
     where: {
       github_id: id + '',
     },
     select: {
       id: true,
-      username: true,
-      email: true,
     },
   });
 
-  if (!user?.email) {
-    await db.user.update({
-      where: {
-        github_id: id + '',
-      },
-      data: {
-        email: user!.email ? null : userEmailResponse,
-      },
-    });
-  }
-
-  if (user) {
-    await makeLogin(user.id);
+  if (existGithubUser) {
+    await makeLogin(existGithubUser.id);
     return redirect('/profile');
   }
 
-  const username = user!.username;
-  const userEmail = user!.email;
+  const existsUsername = await db.user.findUnique({
+    where: {
+      username: login,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const existsUserEmail = await db.user.findUnique({
+    where: {
+      email: userEmailResponse,
+    },
+    select: {
+      id: true,
+    },
+  });
 
   const newUser = await db.user.create({
     data: {
-      username: username === login ? username + '-gh' : username,
+      username: existsUsername ? login + '-gh' : login,
       github_id: id + '',
       avatar: avatar_url,
-      email: userEmail ? null : userEmailResponse,
+      email: existsUserEmail ? null : userEmailResponse,
     },
     select: {
       id: true,

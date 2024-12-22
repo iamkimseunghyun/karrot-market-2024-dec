@@ -3,7 +3,7 @@
 import db from '@/lib/db';
 import getSession from '@/lib/session';
 import { redirect } from 'next/navigation';
-import { productSchema } from '@/app/products/add/schema';
+import { productSchema } from '@/app/products/new/add/schema';
 
 export async function uploadProduct(formData: FormData) {
   const data = {

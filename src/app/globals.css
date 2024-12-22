@@ -12,4 +12,7 @@
   .primary-btn {
     @apply w-full bg-orange-500 text-white text-lg font-medium rounded-md text-center hover:bg-orange-400 transition-colors;
   }
+  .danger-btn {
+    @apply w-full bg-red-500 text-white text-lg font-medium rounded-md text-center hover:bg-red-400 transition-colors;
+  }
 }

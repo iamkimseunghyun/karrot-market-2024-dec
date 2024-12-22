@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { formatToKRW } from '@/lib/utils';
+import { revalidateTag, unstable_cache as nextCache } from 'next/cache';
 
 async function getIsOwner(userId: number) {
   const session = await getSession();
@@ -14,6 +15,11 @@ async function getIsOwner(userId: number) {
   }
   return false;
 }
+
+const revalidate = async () => {
+  'use server';
+  revalidateTag('product-title');
+};
 
 async function getProduct(id: number) {
   const product = await db.product.findUnique({
@@ -31,20 +37,43 @@ async function getProduct(id: number) {
   return product;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const product = await getProduct(Number(params.id));
+const getCachedProdcut = nextCache(getProduct, ['product-detail'], {
+  tags: ['product-detail', 'xxx'],
+});
+
+async function getProductTitle(id: number) {
+  const product = await db.product.findUnique({
+    where: { id },
+    select: {
+      title: true,
+    },
+  });
+  return product;
+}
+
+const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
+  tags: ['product-title', 'xxx'],
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const product = await getCachedProductTitle(Number((await params).id));
   return {
     title: product?.title,
   };
 }
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = Number((await params).id);
+  // const id = Number(await params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) {
     return notFound();
   }
 
-  const product = await getProduct(id);
+  const product = await getCachedProdcut(id);
   if (!product) {
     return notFound();
   }
@@ -96,6 +125,11 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             <form action={deleteProduct}>
               <button className="bg-red-500 py-2.5 px-5 rounded-md text-white font-semibold">
                 상품 삭제
+              </button>
+            </form>
+            <form action={revalidate}>
+              <button className="bg-red-500 py-2.5 px-5 rounded-md text-white font-semibold">
+                상품 갱신
               </button>
             </form>
             <Link href={`/products/${id}/edit`}>

@@ -2,6 +2,7 @@ import React from 'react';
 import getSession from '@/lib/session';
 import db from '@/lib/db';
 import { notFound, redirect } from 'next/navigation';
+import Link from 'next/link';
 
 async function getUser() {
   const session = await getSession();
@@ -28,6 +29,7 @@ const Page = async () => {
       <form action={logOut}>
         <button>Log out</button>
       </form>
+      <Link href="/home">홈으로 가기</Link>
     </div>
   );
 };

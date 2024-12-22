@@ -29,12 +29,10 @@ export async function getUserEmail(accessToken: string) {
   const githubEmail = await userEmailResponse.json();
 
   for (const mail of githubEmail) {
-    // console.log('github email--', mail);
     if (mail.primary && mail.verified && mail.visibility === 'private') {
       email = mail.email;
       break;
     }
   }
-
   return email;
 }

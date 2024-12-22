@@ -5,13 +5,16 @@ import React from 'react';
 interface FormButtonProps {
   text: string;
   isPending?: boolean;
+  action?: () => void;
+  type?: string;
 }
 
-const Button = ({ text, isPending }: FormButtonProps) => {
+const Button = ({ text, isPending, action, type }: FormButtonProps) => {
   return (
     <button
+      onClick={() => action}
       disabled={isPending}
-      className="primary-btn h-10 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed"
+      className={`${type}-btn h-10 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed`}
     >
       {isPending ? '로딩 중' : text}
     </button>
