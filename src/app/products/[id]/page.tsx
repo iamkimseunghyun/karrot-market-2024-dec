@@ -31,6 +31,13 @@ async function getProduct(id: number) {
   return product;
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const product = await getProduct(Number(params.id));
+  return {
+    title: product?.title,
+  };
+}
+
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = Number((await params).id);
   if (isNaN(id)) {
