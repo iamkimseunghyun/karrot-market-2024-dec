@@ -8,7 +8,8 @@ interface ListProductProps {
   title: string;
   price: number;
   created_at: Date;
-  photo: string;
+  photos?: { url: string }[];
+  photo?: string;
 }
 
 const ListProduct = ({
@@ -16,13 +17,15 @@ const ListProduct = ({
   title,
   price,
   created_at,
+  photos,
   photo,
 }: ListProductProps) => {
+  const imageUrl = photos?.[0]?.url || photo || '';
   return (
     <Link href={`/products/${id}`}>
       <div className="relative size-28 rounded-md overflow-hidden">
         <Image
-          src={`${photo}/thumbnail`}
+          src={`${imageUrl}/thumbnail`}
           alt={title}
           fill
           className="object-cover"

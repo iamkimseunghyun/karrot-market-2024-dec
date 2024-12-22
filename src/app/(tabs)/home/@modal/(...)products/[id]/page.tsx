@@ -5,17 +5,24 @@ import Image from 'next/image';
 
 export default async function Modal({ params }: { params: { id: string } }) {
   const id = parseInt((await params).id);
-  const productPhoto = await db.product.findUnique({
+  const product = await db.product.findUnique({
     where: { id },
     select: {
-      photo: true,
       title: true,
+      photos: {
+        select: {
+          url: true,
+        },
+        take: 1,
+      },
     },
   });
-  if (!productPhoto) {
+  if (!product) {
     return;
   }
-  const imageURL = productPhoto.photo + '/public';
+  const imageURL = product.photos[0]?.url
+    ? product.photos[0].url + '/public'
+    : '';
   console.log('image URL ', imageURL);
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-50 left-0 top-0">
@@ -24,7 +31,7 @@ export default async function Modal({ params }: { params: { id: string } }) {
         <div className="relative aspect-square  bg-neutral-700 text-neutral-200 rounded-md flex justify-center items-center">
           <Image
             src={imageURL}
-            alt={productPhoto.title}
+            alt={product.title}
             fill
             className="object-cover"
           />

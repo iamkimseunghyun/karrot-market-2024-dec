@@ -9,7 +9,12 @@ export async function getMoreProducts(page: number) {
       title: true,
       price: true,
       created_at: true,
-      photo: true,
+      photos: {
+        select: {
+          url: true,
+        },
+        take: 1, // 첫 번째 이미지만 가져옴
+      },
     },
     skip: page * 1,
     take: 1,
@@ -17,5 +22,9 @@ export async function getMoreProducts(page: number) {
       created_at: 'desc',
     },
   });
-  return products;
+  // photos 배열의 첫 번째 이미지 URL을 photo 필드로 변환
+  return products.map((product) => ({
+    ...product,
+    photo: product.photos[0]?.url || '', // 이미지가 없는 경우 빈 문자열 반환
+  }));
 }

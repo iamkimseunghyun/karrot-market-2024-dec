@@ -6,8 +6,9 @@ import { redirect } from 'next/navigation';
 import { productSchema } from '@/app/products/add/schema';
 
 export async function uploadProduct(formData: FormData) {
+  const photos = formData.getAll('photos[]');
   const data = {
-    photo: formData.get('photo'),
+    photos,
     title: formData.get('title'),
     price: formData.get('price'),
     description: formData.get('description'),
@@ -31,7 +32,9 @@ export async function uploadProduct(formData: FormData) {
           title: result.data.title,
           description: result.data.description,
           price: result.data.price,
-          photo: result.data.photo,
+          photos: {
+            create: result.data.photos.map((photo) => ({ url: photo })),
+          },
           user: {
             connect: {
               id: session.id,
@@ -48,8 +51,9 @@ export async function uploadProduct(formData: FormData) {
 }
 
 export async function editProduct(formData: FormData, productId: number) {
+  const photos = formData.getAll('photos[]');
   const data = {
-    photo: formData.get('photo'),
+    photos,
     title: formData.get('title'),
     price: formData.get('price'),
     description: formData.get('description'),
@@ -57,10 +61,15 @@ export async function editProduct(formData: FormData, productId: number) {
 
   const result = productSchema.safeParse(data);
   if (!result.success) {
-    console.log('에디트 프로덕트 리절트 실패');
     return result.error.flatten();
   } else {
     if (productId) {
+      // 기존 이미지를 먼저 삭제
+      await db.productImage.deleteMany({
+        where: {
+          productId,
+        },
+      });
       const product = await db.product.update({
         where: {
           id: productId,
@@ -69,7 +78,11 @@ export async function editProduct(formData: FormData, productId: number) {
           title: result.data.title,
           description: result.data.description,
           price: result.data.price,
-          photo: result.data.photo,
+          photos: {
+            create: result.data.photos.map((photo) => ({
+              url: photo,
+            })),
+          },
         },
         select: {
           id: true,

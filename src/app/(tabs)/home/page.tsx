@@ -12,14 +12,22 @@ async function getInitialProducts() {
       title: true,
       price: true,
       created_at: true,
-      photo: true,
+      photos: {
+        select: {
+          url: true,
+        },
+        take: 1,
+      },
     },
     take: 1,
     orderBy: {
       created_at: 'desc',
     },
   });
-  return products;
+  return products.map((product) => ({
+    ...product,
+    photo: product.photos[0]?.url || '',
+  }));
 }
 
 export type InitialProduct = Prisma.PromiseReturnType<
