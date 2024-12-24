@@ -35,7 +35,20 @@ const loginFormSchema = z.object({
   // .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
 });
 
-export const login = async (prevState: any, formData: FormData) => {
+type FormState = {
+  fieldErrors?: {
+    username?: string[];
+    email?: string[];
+    password?: string[];
+    confirm_password?: string[];
+  };
+  formErrors?: string[];
+};
+
+export const login = async (
+  prevState: FormState | null,
+  formData: FormData
+) => {
   const data = {
     email: formData.get('email'),
     password: formData.get('password'),

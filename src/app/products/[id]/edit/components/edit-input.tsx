@@ -133,7 +133,7 @@ const EditInput = ({
       <form action={onValid} className="flex flex-col gap-5 p-5">
         <label
           htmlFor="photo"
-          className="border-2 aspect-square flex flex-col items-center justify-center text-neutral-300 border-neutral-300 rounded-md border-dashed cursor-pointer bg-center bg-cover"
+          className="border-2 aspect-square flex flex-col items-center justify-center text-neutral-300 border-neutral-300 rounded-md border-dashed cursor-pointer bg-center bg-contain bg-no-repeat"
           style={{
             backgroundImage: `url(${preview})`,
           }}
@@ -187,8 +187,8 @@ const EditInput = ({
           {...register('description')}
           errors={[errors.description?.message ?? '']}
         />
-        <Button text="수정 완료" type="primary" />
-        <Button action={cancelEdit} text="취소" type="danger" />
+        <Button text="수정" type="primary" />
+        <Button action={cancelEdit} text="취소" type="primary" />
       </form>
     </div>
   );

@@ -4,7 +4,6 @@ import { z } from 'zod';
 import bcrypt from 'bcrypt';
 
 import db from '@/lib/db';
-import { cookies } from 'next/headers';
 import { PASSWORD_MIN_LENGTH } from '@/lib/constants';
 import makeLogin from '@/lib/make-login';
 import { redirect } from 'next/navigation';
@@ -81,7 +80,20 @@ const createAccountFormSchema = z
     path: ['confirm_password'],
   });
 
-export async function createAccount(prevState: any, formData: FormData) {
+type FormState = {
+  fieldErrors?: {
+    username?: string[];
+    email?: string[];
+    password?: string[];
+    confirm_password?: string[];
+  };
+  formErrors?: string[];
+};
+
+export async function createAccount(
+  prevState: FormState | null,
+  formData: FormData
+) {
   const data = {
     username: formData.get('username'),
     email: formData.get('email'),

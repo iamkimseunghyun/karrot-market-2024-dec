@@ -25,6 +25,8 @@ const ListProduct = ({
           src={`${photo}/thumbnail`}
           alt={title}
           fill
+          priority={true}
+          sizes="cover"
           className="object-cover"
         />
       </div>

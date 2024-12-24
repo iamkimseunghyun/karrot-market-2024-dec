@@ -1,6 +1,7 @@
 import React from 'react';
 import db from '@/lib/db';
 import EditInput from '@/app/products/[id]/edit/components/edit-input';
+import { notFound } from 'next/navigation';
 
 const getProduct = async (id: number) => {
   const data = db.product.findUnique({
@@ -15,11 +16,20 @@ const getProduct = async (id: number) => {
   return data;
 };
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+const Page = async ({
+  params,
+}: {
+  params: Promise<{
+    id: string;
+  }>;
+}) => {
   const productId = parseInt((await params).id);
+  if (isNaN(productId)) {
+    return notFound();
+  }
   const productData = await getProduct(productId);
   if (!productData) {
-    return;
+    return notFound();
   }
   return (
     <div>

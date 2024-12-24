@@ -6,13 +6,13 @@ interface FormButtonProps {
   text: string;
   isPending?: boolean;
   action?: () => void;
-  type?: string;
+  type?: 'primary' | 'secondary';
 }
 
 const Button = ({ text, isPending, action, type }: FormButtonProps) => {
   return (
     <button
-      onClick={() => action}
+      onClick={action}
       disabled={isPending}
       className={`${type}-btn h-10 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed`}
     >

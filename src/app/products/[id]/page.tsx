@@ -1,12 +1,16 @@
 import React from 'react';
 import { notFound, redirect } from 'next/navigation';
 import db from '@/lib/db';
-import getSession from '@/lib/session';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { formatToKRW } from '@/lib/utils';
-import { revalidateTag, unstable_cache as nextCache } from 'next/cache';
+import {
+  revalidatePath,
+  revalidateTag,
+  unstable_cache as nextCache,
+} from 'next/cache';
+import getSession from '@/lib/session';
 
 async function getIsOwner(userId: number) {
   const session = await getSession();
@@ -16,10 +20,12 @@ async function getIsOwner(userId: number) {
   return false;
 }
 
-const revalidate = async () => {
-  'use server';
-  revalidateTag('product-title');
-};
+export const revalidate = 60;
+
+// const revalidate = async () => {
+//   'use server';
+//   revalidateTag('product-detail');
+// };
 
 async function getProduct(id: number) {
   const product = await db.product.findUnique({
@@ -37,7 +43,7 @@ async function getProduct(id: number) {
   return product;
 }
 
-const getCachedProdcut = nextCache(getProduct, ['product-detail'], {
+const getCachedProduct = nextCache(getProduct, ['product-detail'], {
   tags: ['product-detail', 'xxx'],
 });
 
@@ -73,7 +79,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     return notFound();
   }
 
-  const product = await getCachedProdcut(id);
+  const product = await getCachedProduct(id);
   if (!product) {
     return notFound();
   }
@@ -83,7 +89,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     await db.product.delete({
       where: { id },
     });
-    redirect('/products');
+    revalidateTag('home-products');
+    redirect('/home');
+  };
+  const revalidate = async () => {
+    'use server';
+    revalidatePath(`/products/${id}`);
   };
   return (
     <div>
@@ -92,6 +103,8 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           src={`${product.photo}/public`}
           alt={product.title}
           fill
+          sizes="cover"
+          priority={true}
           className="object-contain"
         />
       </div>
@@ -132,7 +145,11 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
                 상품 갱신
               </button>
             </form>
-            <Link href={`/products/${id}/edit`}>
+            <Link
+              href={{
+                pathname: `/products/${id}/edit`,
+              }}
+            >
               <span className="bg-blue-500 py-2.5 px-5 rounded-md text-white font-semibold">
                 상품 수정
               </span>
@@ -156,3 +173,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 };
 
 export default Page;
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const products = await db.product.findMany({
+    select: { id: true },
+  });
+  return products.map((product) => ({ id: product.id + '' }));
+}

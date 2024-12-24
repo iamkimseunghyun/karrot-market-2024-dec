@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import ListProduct from '@/components/list-product';
 import { InitialProduct } from '@/app/(tabs)/home/page';
 import { getMoreProducts } from '@/app/(tabs)/home/actions';
-import InfiniteScroll from '@/components/infinite-scroll';
 import LoadMoreButton from '@/components/load-more-button';
 
 interface ProductListProps {

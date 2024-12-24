@@ -15,7 +15,7 @@ const publicOnlyUrls: Urls = {
 };
 
 export async function middleware(req: NextRequest) {
-  console.log('middleware called!');
+  console.log('middleware 콜 called! -> ', req.nextUrl.pathname);
   const session = await getSession();
   const exists = publicOnlyUrls[req.nextUrl.pathname];
 

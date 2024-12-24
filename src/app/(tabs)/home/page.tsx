@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { revalidatePath, unstable_cache as nextCache } from 'next/cache';
 
-const getCachedProducts = nextCache(getInitialProducts, ['home-products']);
+const getCachedProducts = nextCache(getInitialProducts, ['home-products'], {
+  tags: ['home-products'],
+});
 
 async function getInitialProducts() {
   const products = await db.product.findMany({
@@ -33,11 +35,14 @@ export const metadata = {
   title: 'Home',
 };
 
+// export const dynamic = 'force-dynamic';
+export const revalidate = 60;
+
 const Page = async () => {
   const initialProducts = await getCachedProducts();
   const revalidate = async () => {
     'use server';
-    revalidatePath('/');
+    revalidatePath('/home');
   };
   return (
     <div>
